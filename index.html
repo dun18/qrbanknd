@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Thanh toán BIDV - Ngô Mai Nguyên Dương</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 420px;
+      padding: 16px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 18px 16px 16px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+      border: 1px solid #e5e7eb;
+    }
+
+    h1 {
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .bank {
+      text-align: center;
+      font-size: 13px;
+      color: #4b5563;
+      margin-bottom: 10px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .label {
+      color: #4b5563;
+    }
+
+    .value {
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .value-strong {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.12em;
+    }
+
+    .input-group {
+      margin: 12px 0;
+    }
+
+    .input-label {
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    input[type="number"] {
+      flex: 1;
+      padding: 9px 10px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input[type="number"]:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+    }
+
+    button {
+      padding: 0 12px;
+      border-radius: 999px;
+      border: none;
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .qr-box {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px dashed #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .qr-box img {
+      width: 210px;
+      height: 210px;
+      object-fit: contain;
+      background: #ffffff;
+      border-radius: 10px;
+    }
+
+    .hint {
+      font-size: 12px;
+      text-align: center;
+      color: #6b7280;
+    }
+
+    .small-btn {
+      margin-top: 4px;
+      font-size: 11px;
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .small-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .footer {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Thanh toán qua VietQR</h1>
+      <div class="bank">Ngân hàng BIDV</div>
+
+      <div class="row">
+        <div class="label">Số tài khoản</div>
+        <div class="value value-strong" id="accNo">8884342012</div>
+      </div>
+      <div class="row">
+        <div class="label">Chủ tài khoản</div>
+        <div class="value">Ngô Mai Nguyên Dương</div>
+      </div>
+      <div class="row">
+        <div class="label">Ngân hàng</div>
+        <div class="value">BIDV</div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">Nhập số tiền (VND, có thể bỏ trống)</div>
+        <div class="input-row">
+          <input
+            id="amountInput"
+            type="number"
+            min="1000"
+            step="1000"
+            placeholder="Ví dụ: 200000"
+          />
+          <button id="btnGen">Tạo QR</button>
+        </div>
+      </div>
+
+      <div class="qr-box">
+        <img
+          id="qrImg"
+          src="https://img.vietqr.io/image/bidv-8884342012-compact2.png"
+          alt="Mã VietQR BIDV"
+        />
+        <div class="hint" id="qrHint">
+          QR mặc định không cố định số tiền. Nhập số tiền và bấm “Tạo QR” nếu muốn khóa số tiền.
+        </div>
+        <button class="small-btn" id="btnDownload">Tải mã QR</button>
+      </div>
+
+      <div class="footer">
+        © BIDV • VietQR Quick Link
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BANK_ID = "bidv";          // BIDV theo Quick Link VietQR [web:22]
+    const ACCOUNT_NO = "8884342012"; // STK
+    const TEMPLATE = "compact2";     // template QR có logo & thông tin [web:22]
+
+    const amountInput = document.getElementById("amountInput");
+    const btnGen = document.getElementById("btnGen");
+    const qrImg = document.getElementById("qrImg");
+    const qrHint = document.getElementById("qrHint");
+    const btnDownload = document.getElementById("btnDownload");
+
+    function buildQr(amount) {
+      let base = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-${TEMPLATE}.png`;
+      if (!amount || isNaN(amount) || amount <= 0) return base;
+      const fixed = Math.round(amount);
+      return {
+        url: `${base}?amount=${fixed}`, // amount khóa số tiền [web:22]
+        fixed
+      };
+    }
+
+    btnGen.addEventListener("click", () => {
+      const raw = Number(amountInput.value);
+      if (!raw || raw <= 0) {
+        qrImg.src = buildQr();
+        qrHint.textContent =
+          "Đang dùng QR không cố định số tiền. Bạn có thể nhập số tiền rồi bấm “Tạo QR” lại.";
+        return;
+      }
+
+      const result = buildQr(raw);
+      qrImg.src = result.url;
+      qrHint.textContent =
+        "Đã khóa số tiền: " +
+        result.fixed.toLocaleString("vi-VN") +
+        " VND. Vui lòng không chỉnh sửa số tiền khi thanh toán.";
+    });
+
+    btnDownload.addEventListener("click", () => {
+      const link = document.createElement("a");
+      link.href = qrImg.src;
+      link.download = "vietqr-bidv-8884342012.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  </script>
+</body>
+</html>
